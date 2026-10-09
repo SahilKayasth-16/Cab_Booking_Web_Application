@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  ClerkProvider,
-  Show,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -24,25 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased`}
       >
         <ClerkProvider>
-          <header className="flex h-16 items-center justify-end gap-4 border-b px-6">
-            <Suspense fallback={<div className="h-10 w-24" />}>
-              <Show when="signed-out">
-                <SignInButton />
-                <SignUpButton>
-                  <button className="h-10 rounded-full bg-black px-5 text-sm font-medium text-white">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </Show>
-
-              <Show when="signed-in">
-                <UserButton />
-              </Show>
-            </Suspense>
-          </header>
+          <Suspense fallback={<div className="h-16 border-b bg-white" />}>
+            <Navbar />
+          </Suspense>
           {children}
         </ClerkProvider>
       </body>

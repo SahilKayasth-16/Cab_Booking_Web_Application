@@ -9,6 +9,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { pool, testDbConnection } from "./db";
 import { webhookRouter } from "./routes/webhooks";
 import { apiRouter } from "./routes/api";
+import { usersRouter, driversRouter } from "./routes/profile";
 
 const app = express();
 
@@ -23,6 +24,8 @@ app.use(morgan("dev"));
 
 // Webhooks first: they need the raw body, not parsed JSON
 app.use("/api/webhooks", webhookRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/drivers", driversRouter);
 
 app.use(express.json());
 app.use(clerkMiddleware());
