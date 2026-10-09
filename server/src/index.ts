@@ -3,9 +3,12 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { pool, testDbConnection } from "./db";
-
 dotenv.config();
+
+import { clerkMiddleware } from "@clerk/express";
+import { pool, testDbConnection } from "./db";
+import { webhookRouter } from "./routes/webhooks";
+import { apiRouter } from "./routes/api";
 
 const app = express();
 
@@ -16,8 +19,13 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
 app.use(morgan("dev"));
+
+// Webhooks first: they need the raw body, not parsed JSON
+app.use("/api/webhooks", webhookRouter);
+
+app.use(express.json());
+app.use(clerkMiddleware());
 
 app.get("/", (_req, res) => {
   res.json({ message: "Cab Booking API is running" });
@@ -32,6 +40,8 @@ app.get("/health", async (_req, res) => {
     res.status(500).json({ status: "error", db: "disconnected" });
   }
 });
+
+app.use("/api", apiRouter);
 
 const port = Number(process.env.PORT) || 5010;
 
